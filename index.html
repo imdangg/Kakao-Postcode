@@ -4,6 +4,21 @@
   <head>
     <title>주소 찾기</title>
     <meta charset="UTF-8" />
+     <style>
+      #layer {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 1000;
+        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        border: 1px solid #ddd; 
+      }
+    </style>
     <meta
       name="viewport"
       content="width=device-width,height=device-height,initial-scale=1.0"
@@ -66,32 +81,12 @@
               window.postMessageToiOS(postData);
               }
             });
-
-            
           },
           width: "100%",
           height: "100%",
         }).embed(element_layer);
         element_layer.style.display = "block";
         initLayerPosition();
-      }
-
-      function initLayerPosition() {
-        var width = window.innerWidth || document.documentElement.clientWidth;
-        var height =
-          window.innerHeight || document.documentElement.clientHeight;
-        element_layer.style.width = width + "px";
-        element_layer.style.height = height + "px";
-        element_layer.style.left =
-          ((window.innerWidth || document.documentElement.clientWidth) -
-            width) /
-            2 +
-          "px";
-        element_layer.style.top =
-          ((window.innerHeight || document.documentElement.clientHeight) -
-            height) /
-            2 +
-          "px";
       }
     </script>
   </body>
