@@ -25,24 +25,19 @@
     </style>
   </head>
   <body onload="execDaumPostcode()">
-    <div
-      id="layer"
-      style="display:block; position:absolute; overflow:hidden; z-index:1; -webkit-overflow-scrolling:touch; "
-    ></div>
+    <div id="layer"></div>
     <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bd725889ed766974afcca35fd687a390&libraries=services"></script>
     <script>
       window.addEventListener("message", onReceivedPostMessage, false);
 
       function onReceivedPostMessage(event) {
-        //..ex deconstruct event into action & params
         var action = event.data.action;
         var params = event.data.params;
         console.log("onReceivedPostMessage " + event);
       }
 
       function onReceivedActivityMessageViaJavascriptInterface(json) {
-        //..ex deconstruct data into action & params
         var data = JSON.parse(json);
         var action = data.action;
         var params = data.params;
@@ -61,11 +56,12 @@
           oncomplete: function (data) {
             var jibunAddress = "";
 
-            if (data.jibunAddress == "") {
+            if data.jibunAddress == "" {
               jibunAddress = data.autoJibunAddress;
-            } else if (data.autoJibunAddress == "") {
+            } else if data.autoJibunAddress == "" {
               jibunAddress = data.jibunAddress;
             }
+            
             geocoder.addressSearch(data.roadAddress, (result, status) => {
               if (status === kakao.maps.services.Status.OK) {
                   x = result[0].y // 위도
@@ -78,13 +74,15 @@
                   x: x,
                   y: y
               };
-              window.postMessageToiOS(postData);
+                
+              postMessageToiOS(postData);
               }
             });
           },
           width: "100%",
           height: "100%",
         }).embed(element_layer);
+        
         element_layer.style.display = "block";
       }
     </script>
