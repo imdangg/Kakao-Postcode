@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="ko">
   <head>
     <title>주소 찾기</title>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width,height=device-height,initial-scale=1.0"
+      content="width=device-width, height=device-height, initial-scale=1.0"
     />
     <style>
       #layer {
@@ -27,62 +26,68 @@
   <body onload="execDaumPostcode()">
     <div id="layer"></div>
     <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bd725889ed766974afcca35fd687a390&libraries=services"></script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bd725889ed766974afcca35fd687a390&libraries=services"
+    ></script>
     <script>
       window.addEventListener("message", onReceivedPostMessage, false);
 
       function onReceivedPostMessage(event) {
         var action = event.data.action;
         var params = event.data.params;
-        console.log("onReceivedPostMessage " + event);
+        console.log("onReceivedPostMessage", event);
       }
 
       function onReceivedActivityMessageViaJavascriptInterface(json) {
         var data = JSON.parse(json);
         var action = data.action;
         var params = data.params;
-        console.log("onReceivedActivityMessageViaJavascriptInterface " + event);
+        console.log(
+          "onReceivedActivityMessageViaJavascriptInterface",
+          data
+        );
       }
 
       function postMessageToiOS(postData) {
-        window.webkit.messageHandlers.callBackHandler.postMessage(postData);
+        if (window.webkit && window.webkit.messageHandlers.callBackHandler) {
+          window.webkit.messageHandlers.callBackHandler.postMessage(postData);
+        } else {
+          console.error("iOS callBackHandler is not defined.");
+        }
       }
 
       var geocoder = new kakao.maps.services.Geocoder();
 
-      var element_layer = document.getElementById("layer");
       function execDaumPostcode() {
+        var element_layer = document.getElementById("layer");
+
         new daum.Postcode({
           oncomplete: function (data) {
-            var jibunAddress = "";
+            var jibunAddress =
+              data.jibunAddress || data.autoJibunAddress || "";
 
-            if data.jibunAddress == "" {
-              jibunAddress = data.autoJibunAddress;
-            } else if data.autoJibunAddress == "" {
-              jibunAddress = data.jibunAddress;
-            }
-            
             geocoder.addressSearch(data.roadAddress, (result, status) => {
               if (status === kakao.maps.services.Status.OK) {
-                  x = result[0].y // 위도
-                  y = result[0].x // 경도
+                var x = result[0].y; // 위도
+                var y = result[0].x; // 경도
 
-                  var postData = {
+                var postData = {
                   roadAddress: data.roadAddress,
                   jibunAddress: jibunAddress,
                   zonecode: data.zonecode,
                   x: x,
-                  y: y
-              };
-                
-              postMessageToiOS(postData);
+                  y: y,
+                };
+
+                postMessageToiOS(postData);
               }
             });
           },
           width: "100%",
           height: "100%",
         }).embed(element_layer);
-        
+
         element_layer.style.display = "block";
       }
     </script>
