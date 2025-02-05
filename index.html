@@ -40,13 +40,17 @@
     function execDaumPostcode() {
       new daum.Postcode({
         oncomplete: function(data) {
-          var postData = {
-              sido : data.sido,
-              sigungu : data.sigungu,
-              query : data.query,
-              apartment : data.apartment,
-              buildingName: data.buildingName
-          };
+          var jibunAddress =  data.autoJibunAddress || data.jibunAddress || ""
+          var apartment = data.apartment || "";
+          var buildingName = data.buildingName || ""
+
+             var postData = {
+                roadAddress : data.roadAddress,
+                jibunAddress : jibunAddress,
+                zonecode : data.zonecode,
+                apartment : apartment,
+                buildingName: buildingName
+             };
              
              window.postMessageToiOS(postData);             
         },
